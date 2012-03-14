@@ -28,12 +28,12 @@ td, th{
    border-bottom: 1px solid #B9B8B6;
 }
 
-th.date, th.interactionType {
-  width: 30%;
+th.firstname, th.lastname {
+   width: 20%;
 }
 
-select#campaigns {
-  width: 300px;
+th.zipcode {
+   width: 100px;
 }
 
 th{

@@ -1,19 +1,18 @@
 /*globals define window */
-define('views/interactions', function(require) {
-  var $ = require('jquery'), _ = require('underscore'), Backbone = require('backbone'), Campaigns = require('models/campaigns'), Routes = require('controllers/routes'), Rest = require('controllers/rest'), Campaign = require('models/campaign'), InteractionView = require('views/interaction');
+define('views/customers', function(require) {
+  var $ = require('jquery'), _ = require('underscore'), Backbone = require('backbone'), Routes = require('controllers/routes'), Rest = require('controllers/rest'), InteractionView = require('views/interaction');
 
   return Backbone.View.extend({
     controller : {},
-    campaign : {},
+    customers : {},
 
     events : {
-      'click .column' : 'columnClick',
-      'change select#campaigns' : 'campaignSelectionDidChange'
+      'click .column' : 'columnClick'
     },
 
     el : $('body'),
 
-    appendInteractions : function(self, interactions, sortColumn, sortDirection) {
+    appendCustomers : function(self, interactions, sortColumn, sortDirection) {
       interactions = interactions && interactions.get ? interactions : new Backbone.Model();
       $('tbody').find('tr').remove().end();
       _.each(_.sortBy(interactions.get('interactions'), function(interaction) {
@@ -76,26 +75,17 @@ define('views/interactions', function(require) {
     },
 
     initialize : function() {
-      var controller = this.controller = this.options.controller;
-      var campaign = this.campaign = controller.get('campaign');
-      var campaigns = this.campaigns = controller.get('campaigns');
-      var interactions = this.interactions = controller.get('interactions');
-      
-      $('tbody').find('tr').remove().end();
+      var customers = this.customers = this.options.customers = {};
+      $('div#main').find('table').remove().end();
+      $('div#main', self.el).append('<table>');
+      $('table', self.el).append($('<thead>').append($('<tr>')
+          .append($('<th>').text('First Name').addClass('column firstname'))
+          .append($('<th>').text('Last Name').addClass('column lastname'))
+          .append($('<th>').text('Email').addClass('column email'))
+          .append($('<th>').text('Zip Code').addClass('column zipcode'))
+          ));
 
-      if (typeof interactions !== 'undefined' && typeof campaign === 'undefined') {
-        var campaignLink = Rest.findLink(interactions, 'campaign');
-        campaign = new Campaign;
-        campaign.fetch({
-          url : campaignLink.href,
-          success : this.campaignDidLoad(this)
-        });
-        this.appendInteractions(this, interactions, 'date', 'desc');
-      } else if (typeof campaign !== 'undefined') {
-        this.campaignDidLoad(this, campaign)();
-      } else if (typeof campaigns !== 'undefined') {
-        this.campaignsDidLoad(this, campaigns)();
-      }
+      this.appendCustomers(this, customers, 'lastname', 'asc');
     },
 
     columnClick : function(evt) {
@@ -119,7 +109,7 @@ define('views/interactions', function(require) {
       $('th', this.el).removeClass('asc');
       $('th', this.el).removeClass('desc');
       $(evt.target).addClass(sortDirection);
-      this.appendInteractions(this, this.interactions, sortColumn, sortDirection);
+      this.appendCustomers(this, this.customers, sortColumn, sortDirection);
     }
   });
 });

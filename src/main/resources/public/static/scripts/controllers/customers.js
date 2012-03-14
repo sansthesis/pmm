@@ -2,11 +2,19 @@
 define('controllers/customers', function(require) {
   var Backbone = require('backbone');
   var Customers = require('models/customers');
+  var CustomersView = require('views/customers');
   return Backbone.Model.extend({
 
     didLoad : function(controller) {
       return (function(resource, response) {
-        return resource;
+        if( typeof window.app !== 'undefined' && window.app.undelegateEvents ) {
+          window.app.undelegateEvents();
+        }
+        var view = new CustomersView({
+          controller : controller,
+          customers : resource
+        });
+        window.app = view;
       });
     },
 
