@@ -11,8 +11,7 @@ define('controllers/customers', function(require) {
           window.app.undelegateEvents();
         }
         var view = new CustomersView({
-          controller : controller,
-          customers : resource
+          customersResource : resource
         });
         window.app = view;
       });
