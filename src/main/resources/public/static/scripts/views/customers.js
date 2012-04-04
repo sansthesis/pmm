@@ -1,6 +1,6 @@
 /*globals define window */
-define('views/customers', function(require) {
-  var $ = require('jquery'), _ = require('underscore'), Backbone = require('backbone'), CustomerView = require('views/customer'), Customer = require('models/customer');
+define(['jquery', 'underscore', 'backbone', 'views/customer', 'models/customer', 'controllers/rest'], function($, _, Backbone, CustomerView, Customer, Rest) {
+//  var $ = require('jquery'), _ = require('underscore'), Backbone = require('backbone'), CustomerView = require('views/customer'), Customer = require('models/customer');
 
   return Backbone.View.extend({
     customersResource : {},
@@ -22,36 +22,21 @@ define('views/customers', function(require) {
       });
     },
     
-    createCustomerStub : function(self) {
-      return (function(customer) {
-        var view = new CustomerView({link : customer});
-        self.customerViews.push(view);
-        $('tbody').append(view.render().el);
-      });
+    createCustomerStub : function(customer) {
+      var view = new CustomerView({link : customer});
+      this.customerViews.push(view);
+      $('tbody').append(view.render().el);
     },
     
-    customerDidLoad: function(self) {
-      return (function(resource, response) {
-        var uri = _.find(resource.get('links'), function(link) {
-          return 'self' === link.rel;
-        }).href;
-        var view = _.find(self.customerViews, function(v) {
-          return uri === v.options.link.href;
-        });
-        view.options.model = resource;
-        view.render();
+    customerDidLoad: function(resource, response) {
+      var uri = _.find(resource.get('links'), function(link) {
+        return 'self' === link.rel;
+      }).href;
+      var view = _.find(this.customerViews, function(v) {
+        return uri === v.options.link.href;
       });
-    },
-    
-    loadCustomer : function(self) {
-      return (function(customer) {
-        var bean = new Customer;
-        bean.fetch({
-          url : customer['href'],
-          success: self.customerDidLoad(self)
-        });
-        return bean;
-      });
+      view.options.model = resource;
+      view.render();
     },
 
     appendCustomers : function(self, customers, sortColumn, sortDirection) {
@@ -77,6 +62,7 @@ define('views/customers', function(require) {
 
     initialize : function() {
       var customersResource = this.customersResource = this.options.customersResource;
+      var customerLinks = this.customerLinks = this.options.customerLinks;
       $('div#main').find('table').remove().end();
       $('div#main', self.el).append($('<table>').attr('id', 'customers'));
       $('table#customers', self.el).append($('<thead>').append($('<tr>')
@@ -87,13 +73,10 @@ define('views/customers', function(require) {
       $('table#customers', self.el).append($('<tbody>')).end();
       
       // Find all customers to load.
-      var filter = function(link) {return 'customer' === link['rel'];};
+      var filter = function(link) {return 'item' === link['rel'];};
       
       // Create stub for each customer.
-      _.each(_.filter(customersResource.get('links'), filter), this.createCustomerStub(this));
-      
-      // Lazy load each customer.
-      _.each(_.filter(customersResource.get('links'), filter), this.loadCustomer(this));
+      _.each(customerLinks, _.bind(this.createCustomerStub, this));
 
       this.appendCustomers(this, customersResource, 'email', 'asc');
     },

@@ -1,7 +1,5 @@
 /*globals define */
-define('controllers/rest', function(require) {
-  var Backbone = require('backbone');
-
+define(['backbone', 'underscore'], function(Backbone, _) {
   var Rest = Backbone.Model.extend({
     
     isResource: function(input) {
@@ -9,16 +7,15 @@ define('controllers/rest', function(require) {
     },
 
     findLinks : function(resource, rel) {
-      return resource.get('links').filter(function(link) {
-        return link.rel === rel;
-      });
+      var desiredRels = _.isArray(rel) ? rel : [rel];
+      var rels = _.filter(resource.get('links'), function(link) { return (_.isEmpty(_.difference(desiredRels, link.rel.split(' ')))); });
+      return rels;
     },
 
     findLink : function(resource, rel) {
-      return this.findLinks(resource, rel)[0];
+      return _.first(this.findLinks(resource, rel));
     }
   });
 
-  var obj = new Rest;
-  return obj;
+  return new Rest;
 });

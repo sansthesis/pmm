@@ -8,7 +8,7 @@
   [] (response/json {:links (lazy-cat [
                              (links/generate-customers-link "self")
                              (links/generate-root-link "root")]
-                             (map #(links/generate-customer-link (:id %) "customer" (:email %)) (dao/list-customers)))}))
+                             (map #(links/generate-customer-link (:id %) "item" (:email %)) (dao/list-customers)))}))
 
 (defpage "/customers/:id" {:keys [id]}
   (let [entity (dao/get-customer-by-id id)]
@@ -18,8 +18,8 @@
                        :links [(links/generate-customer-link (:id entity) "self" (:email entity))
                                (links/generate-customers-link)])))))
 
-(defpage [:post "/customers"] {:as entity}
-  (let [db-entity (dao/get-customer-by-email (:email entity))]
+(defpage [:post "/customers"] {:keys [email] :as entity}
+  (let [db-entity (dao/get-customer-by-email email)]
     (if (nil? db-entity)
       (response/json (dao/create-customer entity))
       (response/status 409 nil))))
