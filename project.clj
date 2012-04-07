@@ -22,7 +22,7 @@
   :plugins [[lein-cljsbuild "0.1.6"]]
   :cljsbuild {:builds [{:source-path "src/main/cljs"
                         :compiler {:output-to "target/classes/public/static/script/js.js"
-;                                   :output-dir "target/cljs-work"
+                                   :output-dir "target/cljs-work"
                                    :jar true
                                    :optimizations :whitespace
                                    :pretty-print true}}]})
