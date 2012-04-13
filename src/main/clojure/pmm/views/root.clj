@@ -8,7 +8,7 @@
 (defpage "/"
   [] (response/json {:links [
                              (links/generate-root-link "self")
-                             (links/generate-customers-link)]}))
+                             (links/generate-contacts-link)]}))
 
 (defpage "/index.html"
   [] (response/redirect (common/full-url-for (str "/index.html/#!/root?uri=" (common/full-url-for "/")))))

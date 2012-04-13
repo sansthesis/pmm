@@ -3,14 +3,14 @@
             [pmm.ds :as ds]
             [praxis.data :as data]))
 
-(defn list-customers
-  [] (data/list-query ds/pmm-db "select * from customer"))
+(defn list-contacts
+  [] (data/list-query ds/pmm-db "select * from contact"))
 
-(defn get-customer-by-id
-  [key] (data/get-query ds/pmm-db ["select * from customer where id = ?" key]))
+(defn get-contact-by-id
+  [key] (data/get-query ds/pmm-db ["select * from contact where id = ?" key]))
 
-(defn get-customer-by-email
-  [key] (data/get-query ds/pmm-db ["select * from customer where email = ?" key]))
+(defn get-contact-by-email
+  [key] (data/get-query ds/pmm-db ["select * from contact where email = ?" key]))
 
-(defn create-customer
-  [entity] (data/create ds/pmm-db :customer (select-keys entity '(:firstname :lastname :email :zipcode))))
+(defn create-contact
+  [entity] (data/create ds/pmm-db :contact (select-keys entity '(:firstname :lastname :email :zipcode))))

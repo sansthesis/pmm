@@ -4,7 +4,7 @@
 (defn load-mock-data
   [] (dotimes [i 15]
        (client/post
-         (str "http://localhost:8080/customers")
+         (str "http://localhost:8080/contacts")
          {:form-params {:firstname (str "Bob " i)
                         :lastname "Bobber"
                         :email (str "bob.bobber" i "@test.com")
