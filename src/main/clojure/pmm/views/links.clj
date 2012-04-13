@@ -1,15 +1,28 @@
 (ns pmm.views.links
-  (:require [rest.common :as common]))
+  (:require [rest.common :as common]
+            [noir.core :as noir]))
+
+(defn generate-link
+  ([vals] (common/remove-null-values vals)))
 
 (defn generate-root-link
-  ([] (generate-root-link "root"))
-  ([rel] (common/generate-link :href (common/full-url-for "/") :rel rel :type "application/json")))
+  ([] (generate-root-link {}))
+  ([{:keys [rel type] :or {rel "root" type "application/json"}}] 
+    (generate-link {:rel rel
+                    :type type
+                    :href (common/full-url-for (noir/url-for pmm.views.root/root))})))
 
 (defn generate-contact-link
-  ([id] (generate-contact-link id "contact"))
-  ([id rel] (generate-contact-link id rel nil))
-  ([id rel title] (common/generate-link :href (common/full-url-for (str "/contacts/" id)) :rel rel :type "application/json" :title title)))
+  ([{:keys [id rel title type] :or {rel "contact" type "application/json"}}]
+    (generate-link {:rel rel
+                    :type type
+                    :title title
+                    :href (common/full-url-for (noir/url-for pmm.views.contacts/get-contact-by-id {:id id}))})))
 
 (defn generate-contacts-link
-  ([] (generate-contacts-link "contacts"))
-  ([rel] (common/generate-link :href (common/full-url-for "/contacts") :rel rel :type "application/json" :title "contacts")))
+  ([] (generate-contacts-link {}))
+  ([{:keys [rel type title] :or {rel "contacts" type "application/json" title "Contacts"}}]
+    (generate-link {:rel rel
+                    :type type
+                    :title title
+                    :href (common/full-url-for (noir/url-for pmm.views.contacts/get-contacts))})))

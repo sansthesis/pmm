@@ -18,7 +18,7 @@
 
 (defn create
   ([ds table record]
-    (println "Inserting into '" table "':" record)
+    (println (str "Inserting into '" table "':") record)
     (jdbc/with-connection
       ds
       (jdbc/transaction

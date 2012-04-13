@@ -4,21 +4,20 @@
             [pmm.views.links :as links]
             [pmm.dao :as dao]))
 
-(defpage "/contacts"
-  [] (response/json {:links (lazy-cat [
-                             (links/generate-contacts-link "self")
-                             (links/generate-root-link "root")]
-                             (map #(links/generate-contact-link (:id %) "item" (:email %)) (dao/list-contacts)))}))
+(defpage get-contacts "/contacts"
+  [] (response/json {:links (conj (map #(links/generate-contact-link {:id (:id %) :rel "item" :title (:email %)}) (dao/list-contacts))
+                                  (links/generate-contacts-link {:rel "self"})
+                                  (links/generate-root-link {:rel "root"}))}))
 
-(defpage "/contacts/:id" {:keys [id]}
+(defpage get-contact-by-id "/contacts/:id" {:keys [id]}
   (let [entity (dao/get-contact-by-id id)]
     (if (nil? entity)
       (response/status 404 nil)
       (response/json (assoc entity
-                       :links [(links/generate-contact-link (:id entity) "self" (:email entity))
+                       :links [(links/generate-contact-link {:id (:id entity) :rel "self" :title (:email entity)})
                                (links/generate-contacts-link)])))))
 
-(defpage [:post "/contacts"] {:keys [email] :as entity}
+(defpage create-contact [:post "/contacts"] {:keys [email] :as entity}
   (let [db-entity (dao/get-contact-by-email email)]
     (if (nil? db-entity)
       (response/json (dao/create-contact entity))
